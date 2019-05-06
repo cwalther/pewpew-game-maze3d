@@ -1,9 +1,17 @@
 import pew
+from micropython import const
+
+_LOG_LEVEL_W = const(6)
+_LOG_LEVEL_H = const(6)
 
 def run():
 
 	cos = [4,4,3,3,2,1,0,-1,-2,-3,-3,-4,-4,-4,-3,-3,-2,-1,0,1,2,3,3,4]
 	sin = cos[18:]+cos[:18]
+
+	with open('m3dlevel', 'rb') as f:
+		textures = f.read(16)
+		level = f.read()
 
 	def bresenham(ax, ay, bx, by):
 		x = ax
@@ -44,25 +52,14 @@ def run():
 				yield x, y
 
 	def lookup(x, y):
-		x >>= 2
-		y >>= 2
-		if 18 <= x < 22:
-			if 18 <= y < 22:
-				return 2 + ((x+y) & 1)
-			elif 10 <= y < 14:
-				return 3
-		elif 10 <= x < 14:
-			if 18 <= y < 22:
-				return 2
-			elif 10 <= y < 14:
-				return 1
-		return 0
+		b = level[(y << (_LOG_LEVEL_W - 1 - 2)) & (((1 << _LOG_LEVEL_H) - 1) << (_LOG_LEVEL_W - 1)) | ((x >> 3) & ((1 << (_LOG_LEVEL_W - 1)) - 1))]
+		return (b & 0xF) if (x & 4) else (b >> 4)
 
 	pew.init()
 	screen = pew.Pix()
 
-	x = 64
-	y = 64
+	x = (1 << (_LOG_LEVEL_W + 1))
+	y = (1 << (_LOG_LEVEL_H + 1))
 	b = 6
 
 	while pew.keys():
@@ -105,7 +102,7 @@ def run():
 					rxy = max(abs(rx - x), abs(ry - y))
 					for r in range(8):
 						t = (7*rxy - 8*bxy*(5-2*r))//(4*rxy) - 1
-						screen.pixel(c, r, 0 if t < 0 else 1 if t >= 4 else 2+(t&1) if p == 1 else p)
+						screen.pixel(c, r, 0 if t < 0 else 1 if t >= 4 else ((textures[p] >> (t << 1)) & 3))
 					#if keys != 0:
 					#	print(rx, ',', ry, ':', bx, ',', by, '=', p, 'z', 64*bxy/rxy)
 					break
