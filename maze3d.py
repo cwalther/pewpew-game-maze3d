@@ -60,35 +60,39 @@ def run():
 
 	x = (1 << (_LOG_LEVEL_W + 1))
 	y = (1 << (_LOG_LEVEL_H + 1))
+	nx = None
 	b = 6
 
 	while pew.keys():
 		pew.tick(0.1)
 	while True:
 		keys = pew.keys()
-		if keys & pew.K_O:
-			pass
 		if keys & pew.K_X:
 			break
 		if keys & pew.K_RIGHT:
-			b = (b + 23) % 24
-			#print('xy:', x, y, 'b:', b)
+			if keys & pew.K_O:
+				nx = x + sin[b]
+				ny = y - cos[b]
+			else:
+				b = (b + 23) % 24
+				#print('xy:', x, y, 'b:', b)
 		if keys & pew.K_LEFT:
-			b = (b + 1) % 24
-			#print('xy:', x, y, 'b:', b)
+			if keys & pew.K_O:
+				nx = x - sin[b]
+				ny = y + cos[b]
+			else:
+				b = (b + 1) % 24
+				#print('xy:', x, y, 'b:', b)
 		if keys & pew.K_UP:
 			nx = x + cos[b]
 			ny = y + sin[b]
-			if lookup(nx, ny) == 0:
-				x = nx
-				y = ny
-			#print('xy:', x, y, 'b:', b)
 		if keys & pew.K_DOWN:
 			nx = x - cos[b]
 			ny = y - sin[b]
-			if lookup(nx, ny) == 0:
-				x = nx
-				y = ny
+		if nx is not None and lookup(nx, ny) == 0:
+			x = nx
+			y = ny
+			nx = None
 			#print('xy:', x, y, 'b:', b)
 	
 		rx = x + 16*cos[b] - 14*sin[b]
