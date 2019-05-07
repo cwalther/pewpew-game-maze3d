@@ -62,6 +62,8 @@ def run():
 	y = (1 << (_LOG_LEVEL_H + 1))
 	nx = None
 	b = 6
+	sb = sin[b]
+	cb = cos[b]
 
 	while pew.keys():
 		pew.tick(0.1)
@@ -71,32 +73,36 @@ def run():
 			break
 		if keys & pew.K_RIGHT:
 			if keys & pew.K_O:
-				nx = x + sin[b]
-				ny = y - cos[b]
+				nx = x + sb
+				ny = y - cb
 			else:
 				b = (b + 23) % 24
+				sb = sin[b]
+				cb = cos[b]
 				#print('xy:', x, y, 'b:', b)
 		if keys & pew.K_LEFT:
 			if keys & pew.K_O:
-				nx = x - sin[b]
-				ny = y + cos[b]
+				nx = x - sb
+				ny = y + cb
 			else:
 				b = (b + 1) % 24
+				sb = sin[b]
+				cb = cos[b]
 				#print('xy:', x, y, 'b:', b)
 		if keys & pew.K_UP:
-			nx = x + cos[b]
-			ny = y + sin[b]
+			nx = x + cb
+			ny = y + sb
 		if keys & pew.K_DOWN:
-			nx = x - cos[b]
-			ny = y - sin[b]
+			nx = x - cb
+			ny = y - sb
 		if nx is not None and lookup(nx, ny) == 0:
 			x = nx
 			y = ny
 			nx = None
 			#print('xy:', x, y, 'b:', b)
 	
-		rx = x + 16*cos[b] - 14*sin[b]
-		ry = y + 16*sin[b] + 14*cos[b]
+		rx = x + 16*cb - 14*sb
+		ry = y + 16*sb + 14*cb
 		for c in range(8):
 			p = 0
 			for bx, by in bresenham(x, y, rx, ry):
@@ -114,8 +120,8 @@ def run():
 				for r in range(8):
 					screen.pixel(c, r, 0 if r < 3 else 1)
 		
-			rx += 4*sin[b]
-			ry -= 4*cos[b]
+			rx += 4*sb
+			ry -= 4*cb
 	
 		pew.show(screen)
 		pew.tick(0.06)
