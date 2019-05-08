@@ -9,8 +9,10 @@ def run():
 	cos = [4,4,3,3,2,1,0,-1,-2,-3,-3,-4,-4,-4,-3,-3,-2,-1,0,1,2,3,3,4]
 	sin = cos[18:]+cos[:18]
 
-	with open('m3dlevel', 'rb') as f:
-		textures = f.read(16)
+	with open('m3dlevel.bmp', 'rb') as f:
+		f.seek(54)
+		textures = f.read(64)
+		textures = bytes(textures[4*i] for i in range(16))
 		level = f.read()
 
 	def bresenham(ax, ay, bx, by):
