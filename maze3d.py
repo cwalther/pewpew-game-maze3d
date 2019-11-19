@@ -114,13 +114,13 @@ def run():
 					rxy = max(abs(rx - x), abs(ry - y))
 					for r in range(8):
 						t = (7*rxy - 8*bxy*(5-2*r))//(4*rxy) - 1
-						screen.pixel(c, r, 0 if t < 0 else 1 if t >= 4 else ((textures[p] >> (t << 1)) & 3))
+						screen.pixel(c, r, 0 if t < 0 else 73 - 8*r if t >= 4 else ((textures[p] >> (t << 1)) & 3) + 4*(bxy*15//rxy))
 					#if keys != 0:
 					#	print(rx, ',', ry, ':', bx, ',', by, '=', p, 'z', 64*bxy/rxy)
 					break
 			else:
 				for r in range(8):
-					screen.pixel(c, r, 0 if r < 3 else 1)
+					screen.pixel(c, r, 0 if r < 3 else 73 - 8*r)
 		
 			rx += 4*sb
 			ry -= 4*cb
